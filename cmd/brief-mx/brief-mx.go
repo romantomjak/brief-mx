@@ -12,13 +12,10 @@ import (
 )
 
 func main() {
-	sigChan := make(chan os.Signal, 1)
-	signal.Notify(sigChan, syscall.SIGTERM, syscall.SIGINT)
-
 	log.Info("Starting server")
 
 	config := smtp.Config{
-		Addr: "0.0.0.0:3535",
+		Addr: "127.0.0.1:3535",
 	}
 
 	rootCtx, rootCancel := context.WithCancel(context.Background())
@@ -26,6 +23,9 @@ func main() {
 
 	smtpServer := smtp.NewServer(config, shutdownChan)
 	go smtpServer.Start(rootCtx)
+
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGTERM, syscall.SIGINT)
 
 WAIT:
 	for {
